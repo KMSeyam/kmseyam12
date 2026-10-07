@@ -118,6 +118,17 @@ curl -s -X POST "${AUTH_HEADER[@]}" "$WM/inspect" -H 'Content-Type: application/
   -d "{\"file\": \"$(base64 < notes.md | tr -d '\n')\", \"name\": \"notes.md\"}"
 ```
 
+**Local override: paraphrase-only for text.** For plain-text inputs (`.txt`, pasted
+text), always send `"options": {"strategy": "paraphrase@1.0"}` with `/clean` so the
+`mlm` step (needs `transformers` + `roberta-large`) is never required. Only
+`WATERMARKS_REWRITE_*` needs to be configured on the service. Use a different
+strategy only if the user asks.
+
+```bash
+curl -s -X POST "${AUTH_HEADER[@]}" "$WM/clean" -H 'Content-Type: application/json' \
+  -d "{\"file\": \"$(base64 < notes.txt | tr -d '\n')\", \"name\": \"notes.txt\", \"options\": {\"strategy\": \"paraphrase@1.0\"}}"
+```
+
 **Clean** (text / image / container are auto-detected by name + bytes):
 
 ```bash
